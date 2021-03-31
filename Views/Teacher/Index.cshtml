@@ -1,0 +1,18 @@
+﻿@model n01458860CumulativePart1.Models.Teacher
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<form action="/Teacher/Search" method="post">
+    <label for="searchtext">key world:</label>
+    <input type="text" id="searchtext" name="searchbox"/>
+    <input type="radio" id="name" name="filter" value="name" />
+    <label for="name">name</label>
+    <input type="radio" id="hiredate" name="filter" value="hiredate" />
+    <label for="hiredate">hiredate</label>
+    <input type="radio" id="salary" name="filter" value="salary" />
+    <label for="salary">salary</label>
+    <button type="submit">Search</button>
+</form>
+

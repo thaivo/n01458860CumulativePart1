@@ -1,0 +1,33 @@
+﻿@model n01458860CumulativePart1.ViewModels.TeacherViewModel
+@{
+    ViewBag.Title = "Show";
+}
+
+<h2>Teacher information</h2>
+<p>Name: @Model.teacher.name</p>
+<p>Hired date: @Model.teacher.hiredate</p>
+<p>Salary: @Model.teacher.salary</p>
+<h3>List of Courses</h3>
+<ul>
+    @foreach (var course in @Model.classes)
+    {
+    <li>
+        <div>
+            Course: @course.classname
+        </div>
+        <div>
+            Course code: @course.classcode
+        </div>
+        <div>
+            Start date: @course.startdate
+        </div>
+        <div>
+            Finish date: @course.finishdate
+        </div>
+        
+       
+        
+    </li>
+    }
+
+</ul>
