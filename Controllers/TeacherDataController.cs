@@ -21,6 +21,7 @@ namespace n01458860CumulativePart1.Controllers
         /// </example>
         /// <returns>a teacher</returns>
         [HttpGet]
+        [Route("api/teacherdata/findteacherbyid/{id}")]
         public Teacher FindTeacherById(int id)
         {
             //Establish a database connection

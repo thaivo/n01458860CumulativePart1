@@ -13,6 +13,17 @@ namespace n01458860CumulativePart1.Controllers
     public class ClassDataController : ApiController
     {
         private SchoolDbContext dbContext = new SchoolDbContext();
+
+        /// <summary>
+        /// Return classes of a teacher
+        /// </summary>
+        /// <param name="teacherId">id of a teacher</param>
+        /// <example>
+        /// GET api/classdata/findclassesbyteacherid/1
+        /// </example>
+        /// <returns>classes of a teacher</returns>
+        [HttpGet]
+        [Route("api/classdata/FindClassesByTeacherId/{id}")]
         public List<Class> FindClassesByTeacherId(int teacherId)
         {
             //instantiate a database connection
