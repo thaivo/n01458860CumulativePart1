@@ -182,9 +182,10 @@ namespace n01458860CumulativePart1.Controllers
         /// get all teachers from database
         /// </summary>
         /// <example>
-        /// GET api/teacherdata/getteacher
+        /// GET api/teacherdata/getteachers
         /// </example>
         /// <returns>a list of teachers with their information</returns>
+        [Route("api/teacherdata/getteachers")]
         public List<Teacher> GetTeachers()
         {
             //create an instance of a database connection

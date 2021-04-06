@@ -10,10 +10,10 @@ using MySql.Data.MySqlClient;
 
 namespace n01458860CumulativePart1.Controllers
 {
-    public class CourseDataController : ApiController
+    public class ClassDataController : ApiController
     {
         private SchoolDbContext dbContext = new SchoolDbContext();
-        public List<Class> FindCoursesByTeacherId(int teacherId)
+        public List<Class> FindClassesByTeacherId(int teacherId)
         {
             //instantiate a database connection
             MySqlConnection dbConnection = dbContext.AccessDatabase();

@@ -9,12 +9,13 @@ namespace n01458860CumulativePart1.Controllers
 {
     public class TeacherController : Controller
     {
+        //Search interface 
         // GET: Teacher
         public ActionResult Index()
         {
             return View();
         }
-
+        //GET: /Teacher/List
         public ActionResult List()
         {
             TeacherDataController teacherDataController = new TeacherDataController();
@@ -22,19 +23,14 @@ namespace n01458860CumulativePart1.Controllers
 
             return View(teachers);
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="keyword"></param>
-        /// <param name="factor"></param>
-        /// <returns></returns>
+        //GET: /Teacher/Show/{id}
         public ActionResult Show(int id)
         {
             TeacherDataController teacherDataController = new TeacherDataController();
             Teacher foundTeacher = teacherDataController.FindTeacherById(id);
 
-            CourseDataController courseDataController = new CourseDataController();
-            List<Class> classes = courseDataController.FindCoursesByTeacherId(id);
+            ClassDataController classDataController = new ClassDataController();
+            List<Class> classes = classDataController.FindClassesByTeacherId(id);
 
             TeacherViewModel teacherViewModel = new TeacherViewModel
             {
