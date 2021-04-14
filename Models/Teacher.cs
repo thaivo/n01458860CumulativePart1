@@ -12,18 +12,34 @@ namespace n01458860CumulativePart1.Models
         [DataMember]
         public string id;
         [DataMember]
-        public string name;
+        public string fname;
+        [DataMember]
+        public string lname;
+        [DataMember]
+        public string number;
         [DataMember]
         public string hiredate;
         [DataMember]
         public string salary;
 
-        public Teacher(string id, string name, string hiredate, string salary)
+        public Teacher(string id, string fname, string lname,string number, string hiredate, string salary)
         {
             this.id = id;
-            this.name = name;
+            this.fname = fname;
+            this.lname = lname;
+            this.number = number;
             this.hiredate = hiredate;
             this.salary = salary;
         }
+        public Teacher(string fname, string lname, string number, string salary)
+        {
+            this.fname = fname;
+            this.lname = lname;
+            this.number = number;
+            this.salary = salary;
+        }
+
+        //Parameter-less construction for the POST data can absorb into the parameter NewAuthor of AddTeacher at TeacherDataController
+        public Teacher() { }
     }
 }

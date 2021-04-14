@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -58,6 +59,28 @@ namespace n01458860CumulativePart1.Controllers
                 foundTeacher = teacherDataController.FindTeacherBySalary(searchbox);
             }
             return View(foundTeacher);
+        }
+
+        public ActionResult New()
+        {
+            return View();
+        }
+
+        //POST: /Teacher/Create
+        [HttpPost]
+        public ActionResult Create(string fname, string lname, string number, string salary)
+        {
+            Debug.WriteLine("I have accessed the Create Method!");
+            Debug.WriteLine(fname);
+            Debug.WriteLine(lname);
+            Debug.WriteLine(number);
+            Debug.WriteLine(salary);
+
+            Teacher newTeacher = new Teacher(fname, lname, number, salary);
+            TeacherDataController teacherDataController = new TeacherDataController();
+            teacherDataController.AddTeacher(newTeacher);
+
+            return RedirectToAction("List");
         }
 
     }

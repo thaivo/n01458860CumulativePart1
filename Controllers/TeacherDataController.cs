@@ -4,8 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using n01458860CumulativePart1.Models;
 using MySql.Data.MySqlClient;
+
+
 namespace n01458860CumulativePart1.Controllers
 {
     public class TeacherDataController : ApiController
@@ -44,8 +47,8 @@ namespace n01458860CumulativePart1.Controllers
             Teacher foundTeacher = null;
             while (dbreader.Read())
             {
-                foundTeacher = new Teacher(id.ToString(), dbreader["teacherfname"] + " " + dbreader["teacherlname"],
-                                            dbreader["hiredate"].ToString(), dbreader["salary"].ToString());
+                foundTeacher = new Teacher(id.ToString(), dbreader["teacherfname"].ToString(), dbreader["teacherlname"].ToString(),
+                                           dbreader["employeenumber"].ToString(), dbreader["hiredate"].ToString(), dbreader["salary"].ToString());
             }
 
             //Close database connection
@@ -79,7 +82,9 @@ namespace n01458860CumulativePart1.Controllers
             //create a SELECT query 
             command.CommandText = "SELECT *" +
                                   "FROM teachers " +
-                                  "WHERE CONCAT(teacherfname, ' ', teacherlname) = @name ";
+                                  "WHERE CONCAT(teacherfname, ' ', teacherlname) = @name OR " +
+                                  "teacherfname = @name OR " +
+                                  "teacherlname = @name";
             command.Parameters.AddWithValue("@name", name);
             command.Prepare();
 
@@ -90,7 +95,8 @@ namespace n01458860CumulativePart1.Controllers
             //Loop through each row result set
             while (dbReader.Read())
             {
-                foundTeacher = new Teacher( dbReader["teacherid"].ToString(), name, dbReader["hiredate"].ToString(), dbReader["salary"].ToString());
+                foundTeacher = new Teacher( dbReader["teacherid"].ToString(), dbReader["teacherfname"].ToString(), dbReader["teacherlname"].ToString(),
+                     dbReader["employeenumber"].ToString(), dbReader["hiredate"].ToString(), dbReader["salary"].ToString());
             }
 
             //Close connection between database and webserver after loading data
@@ -133,8 +139,9 @@ namespace n01458860CumulativePart1.Controllers
             //Loop through each row result set
             while (DataReader.Read())
             {
-                string name = DataReader["teacherfname"].ToString() + " " + DataReader["teacherlname"].ToString();
-                foundTeacher = new Teacher(DataReader["teacherid"].ToString(), name, DataReader["hiredate"].ToString(), DataReader["salary"].ToString());
+                ;
+                foundTeacher = new Teacher(DataReader["teacherid"].ToString(), DataReader["teacherfname"].ToString(), DataReader["teacherlname"].ToString(),
+                     DataReader["employeenumber"].ToString(), DataReader["hiredate"].ToString(), DataReader["salary"].ToString());
             }
             //Close connection between MySQL database and web server
             dbConnection.Close();
@@ -176,8 +183,9 @@ namespace n01458860CumulativePart1.Controllers
             //Loop through each row result set
             while (dataReader.Read())
             {
-                string name = dataReader["teacherfname"].ToString() + " " + dataReader["teacherlname"].ToString();
-                foundTeacher = new Teacher(dataReader["teacherid"].ToString(), name, dataReader["hiredate"].ToString(), salary);
+                foundTeacher = new Teacher(dataReader["teacherid"].ToString(), dataReader["teacherfname"].ToString(), dataReader["teacherlname"].ToString(),
+
+                    dataReader["employeenumber"].ToString(),dataReader["hiredate"].ToString(), salary);
             }
 
             //Close a connection between MySQL database and webserver
@@ -217,14 +225,59 @@ namespace n01458860CumulativePart1.Controllers
             //Check whether there is any next record or not
             while(dbreader.Read())
             {
-                Teacher teacher = new Teacher(dbreader["teacherid"].ToString(), dbreader["teacherfname"].ToString()+" "+ dbreader["teacherlname"],
-                                              dbreader["hiredate"].ToString(), dbreader["salary"].ToString());
+                Teacher teacher = new Teacher(dbreader["teacherid"].ToString(), dbreader["teacherfname"].ToString(), dbreader["teacherlname"].ToString(),
+                                             dbreader["employeenumber"].ToString(), dbreader["hiredate"].ToString(), dbreader["salary"].ToString());
                 teachers.Add(teacher);
             }
 
             //Close a connection between database and web server.
             dbConn.Close();
             return teachers;
+        }
+
+
+        /// <summary>
+        /// Add a teacher to the MySQL database
+        /// </summary>
+        /// <param name="NewTeacher">An object with fields that map to the columns of the teacher's table. Non-Deterministic</param>
+        /// <example>
+        /// POST api/TeacherData/AddTeacher
+        /// FORM DATA / POST DATA / REQUEST BODY 
+        /// {
+        ///	"fname":"Christine",
+        ///	"lname":"Bittle",
+        ///	"number":"T234",
+        ///	"salary":"70"
+        /// }
+        /// </example>
+        /// 
+        [HttpPost]
+        [EnableCors(origins:"*", methods: "*", headers: "*")]
+        public void AddTeacher([FromBody]Teacher NewTeacher)
+        {
+            //Create an instance of a connection
+            MySqlConnection dbConnection = dbContext.AccessDatabase();
+
+            //Open the connection between database and web server
+            dbConnection.Open();
+
+            //Establish a new command for our database 
+            MySqlCommand command = dbConnection.CreateCommand();
+
+            //SQL QUERY
+            command.CommandText = "insert into teachers (teacherfname, teacherlname, employeenumber, hiredate,salary) " +
+                "values (@TeacherFname, @TeacherLname, @TeacherNumber, CURRENT_DATE(), @TeacherSalary)";
+            command.Parameters.AddWithValue("@TeacherFname",NewTeacher.fname);
+            command.Parameters.AddWithValue("@TeacherLname",NewTeacher.lname);
+            command.Parameters.AddWithValue("@TeacherNumber",NewTeacher.number);
+            command.Parameters.AddWithValue("@TeacherSalary",NewTeacher.salary);
+            command.Prepare();
+
+            //Execute the insert statement
+            command.ExecuteNonQuery();
+
+            //Close the connection between database and web server
+            dbConnection.Close();
         }
     }
 }
