@@ -34,7 +34,9 @@ namespace n01458860CumulativePart1.Controllers
             MySqlCommand command = dbConnection.CreateCommand();
 
             //Create a SELECT query
-            command.CommandText = "SELECT * FROM teachers WHERE teacherid = "+ id.ToString();
+            command.CommandText = "SELECT * FROM teachers WHERE teacherid = @id";
+            command.Parameters.AddWithValue("@id", id);
+            command.Prepare();
 
             //Gather result set of a query into a variable
             MySqlDataReader dbreader = command.ExecuteReader();
@@ -77,7 +79,10 @@ namespace n01458860CumulativePart1.Controllers
             //create a SELECT query 
             command.CommandText = "SELECT *" +
                                   "FROM teachers " +
-                                  "WHERE CONCAT(teacherfname, ' ', teacherlname) = '" + name + "' ";
+                                  "WHERE CONCAT(teacherfname, ' ', teacherlname) = @name ";
+            command.Parameters.AddWithValue("@name", name);
+            command.Prepare();
+
             //Gather result set of query into a variable
             MySqlDataReader dbReader = command.ExecuteReader();
 
@@ -116,9 +121,10 @@ namespace n01458860CumulativePart1.Controllers
 
             //Create a SELECT query
             command.CommandText = "SELECT * " +
-                                  "FROM teachers" +
-                                  "WHERE hiredate = '" + hiredate + "' ";
-
+                                  "FROM teachers " +
+                                  "WHERE hiredate = @date ";
+            command.Parameters.AddWithValue("@date", hiredate);
+            command.Prepare();
 
             //Gather result set of a query into a variable
             MySqlDataReader DataReader = command.ExecuteReader();
@@ -157,9 +163,11 @@ namespace n01458860CumulativePart1.Controllers
             MySqlCommand command = dbConnection.CreateCommand();
 
             //Create a SELECT query
-            command.CommandText = "SELECT *" +
-                                  "FROM teachers" +
-                                  "WHERE c.salary = '" + salary + "' ";
+            command.CommandText = "SELECT * " +
+                                  "FROM teachers " +
+                                  "WHERE salary = @salary";
+            command.Parameters.AddWithValue("@salary", salary);
+            command.Prepare();
 
             //Gather result set of a query into a variable
             MySqlDataReader dataReader = command.ExecuteReader();
