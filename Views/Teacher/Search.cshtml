@@ -1,9 +1,22 @@
-﻿@model n01458860CumulativePart1.Models.Teacher
+﻿@model IEnumerable<n01458860CumulativePart1.Models.Teacher>
 @{
     ViewBag.Title = "Search";
 }
+<h2>Result</h2>
+@{if (Model == null)
+    {
+        <p>
+            Not found.
+        </p>
+    }
+    else
+    {
+        foreach (var teacher in Model)
+        {
+            <div>
+                <a href="/Teacher/Show/@teacher.id">@teacher.fname @teacher.lname @teacher.hiredate</a>
+            </div>
 
-<h2>Teacher information:</h2>
-<p>Name: @Model.name</p>
-<p>Hire date: @Model.hiredate</p>
-<p>Salary: @Model.salary</p>
+        }
+    }
+}

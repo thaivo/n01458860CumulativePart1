@@ -2,9 +2,9 @@
 @{
     ViewBag.Title = "New";
 }
-
+<script type="text/javascript" src="~/Scripts/teacherInfoValidation.js"></script>
 <h2>New Teacher</h2>
-<form method="POST" action="/Teacher/Create">
+<form method="POST" action="/Teacher/Create" name="teacherForm">
     <div>
         <label for="fname">First name:</label>
         <input type="text" id="fname" name="fname" />
@@ -19,7 +19,7 @@
     </div>
     <div>
         <label for="salary">Salary:</label>
-        <input type="number" id="salary" name="salary" />
+        <input type="text" id="salary" name="salary" />
     </div>
     <div>
         <input type="submit" value="Create Teacher" />

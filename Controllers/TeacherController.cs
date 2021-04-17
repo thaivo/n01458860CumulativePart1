@@ -42,23 +42,16 @@ namespace n01458860CumulativePart1.Controllers
         }
 
         [HttpPost]
-        public ActionResult Search(string searchbox, string filter)
+        public ActionResult Search(string nameBox, string hiredateFromBox, string hiredateToBox, string salaryFromBox, string salaryToBox)
         {
+            Debug.WriteLine("name: " + nameBox);
+            Debug.WriteLine("hiredateFromBox: " + hiredateFromBox);
+            Debug.WriteLine("hiredateToBox: " + hiredateToBox);
+            Debug.WriteLine("salaryFromBox: " + salaryFromBox);
+            Debug.WriteLine("salaryToBox: " + salaryToBox);
             TeacherDataController teacherDataController = new TeacherDataController();
-            Teacher foundTeacher = null;
-            if (filter == "name")
-            {
-                foundTeacher = teacherDataController.FindTeacherByName(searchbox);
-            }
-            else if (filter == "hiredate")
-            {
-                foundTeacher = teacherDataController.FindTeacherByHireDate(searchbox);
-            }
-            else if (filter == "salary")
-            {
-                foundTeacher = teacherDataController.FindTeacherBySalary(searchbox);
-            }
-            return View(foundTeacher);
+            List<Teacher> foundTeachers = teacherDataController.FindTeachers(nameBox, hiredateFromBox, hiredateToBox, salaryFromBox, salaryToBox);
+            return View(foundTeachers);
         }
 
         public ActionResult New()
@@ -76,10 +69,45 @@ namespace n01458860CumulativePart1.Controllers
             Debug.WriteLine(number);
             Debug.WriteLine(salary);
 
+            if(fname == "" || lname == "")
+            {
+                TempData["error"] = "Invalid teacher name";
+                Debug.WriteLine("Invalid teacher name");
+                return RedirectToAction("ErrorValidation");
+            }
+            if(number == "" || salary=="")
+            {
+                TempData["error"] = "Invalid teacher number or salary";
+                Debug.WriteLine("Invalid teacher number or salary");
+                return RedirectToAction("ErrorValidation");
+            }
+            
+
             Teacher newTeacher = new Teacher(fname, lname, number, salary);
             TeacherDataController teacherDataController = new TeacherDataController();
             teacherDataController.AddTeacher(newTeacher);
 
+            return RedirectToAction("List");
+        }
+
+        public ActionResult ErrorValidation()
+        {
+            return View();
+        }
+
+        //GET: /Teacher/DeleteConfirm/{id}
+        public ActionResult DeleteConfirm(int id)
+        {
+            TeacherDataController teacherDataController = new TeacherDataController();
+            Teacher foundTeacher = teacherDataController.FindTeacherById(id);
+            return View(foundTeacher);
+        }
+
+        //POST: /Teacher/Delete/{id}
+        public ActionResult Delete(int id)
+        {
+            TeacherDataController teacherDataController = new TeacherDataController();
+            teacherDataController.DeleteTeacher(id);
             return RedirectToAction("List");
         }
 

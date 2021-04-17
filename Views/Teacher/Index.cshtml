@@ -2,17 +2,45 @@
 @{
     ViewBag.Title = "Index";
 }
-
+<script type="text/javascript" src="~/Scripts/search.js"></script>
 <h2>Index</h2>
-<form action="/Teacher/Search" method="post">
-    <label for="searchtext">key world:</label>
-    <input type="text" id="searchtext" name="searchbox"/>
-    <input type="radio" id="name" name="filter" value="name" />
-    <label for="name">name</label>
-    <input type="radio" id="hiredate" name="filter" value="hiredate" />
-    <label for="hiredate">hiredate</label>
-    <input type="radio" id="salary" name="filter" value="salary" />
-    <label for="salary">salary</label>
+<form action="/Teacher/Search" method="post" name="searchForm">
+    <input type="checkbox" id="nameCheckBox" name="nameCheckBox" value="" />
+    <label for="nameCheckBox">name</label>
+    <input type="checkbox" id="hiredateCheckBox" name="hiredateCheckBox" value="hiredate" />
+    <label for="hiredateCheckBox">hiredate</label>
+    <input type="checkbox" id="salaryCheckBox" name="salaryCheckBox" value="salary" />
+    <label for="salaryCheckBox">salary</label>
+    <div id="name">
+        <label for="namebox">Name:</label>
+        <input type="text" id="nameBox" name="nameBox" placeholder="first or last or full name" />
+    </div>
+
+    <div id="hiredate">
+        <div>
+            <label for="hiredateFrom">Hiredate from:</label>
+            <input type="date" id="hiredateFromBox" name="hiredateFromBox" value="" />
+        </div>
+        <div>
+            <label for="hiredateTo">Hiredate to:</label>
+            <input type="date" id="hiredateToBox" name="hiredateToBox" value="" />
+        </div>
+    </div>
+    
+
+    <div id="salary">
+        <div>
+            <label for="salaryFrom">Salary from:</label>
+            <input type="number" id="salaryFromBox" name="salaryFromBox" value="" />
+        </div>
+
+        <div>
+            <label for="salaryTo">Salary to:</label>
+            <input type="number" id="salaryToBox" name="salaryToBox" value="" />
+        </div>
+    </div>
+    
     <button type="submit">Search</button>
+
 </form>
 

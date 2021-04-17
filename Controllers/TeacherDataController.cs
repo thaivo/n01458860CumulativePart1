@@ -63,13 +63,15 @@ namespace n01458860CumulativePart1.Controllers
         /// </summary>
         /// <param name="name">full name of a teacher</param>
         /// <example>
-        /// GET api/teacherdata/FindTeacherByName/"Alexander Bennett"
+        /// GET api/teacherdata/FindTeacher/"Alexander Bennett"
         /// </example>
         /// <returns>information of a teacher</returns>
         [HttpGet]
-        [Route("api/teacherdata/findteacherbyname/{name}")]
-        public Teacher FindTeacherByName(string name)
+        /*[Route("api/teacherdata/findteacherbyname/{name}")]*/
+        public List<Teacher> FindTeachers(string teacherName, string fromHireDate, string toHireDate, string fromSalary, string toSalary)
         {
+            ;
+            List<Teacher> foundTeachers = new List<Teacher>() ;
             //create an instance of a connection;
             MySqlConnection dbConnection = dbContext.AccessDatabase();
 
@@ -80,12 +82,37 @@ namespace n01458860CumulativePart1.Controllers
             MySqlCommand command = dbConnection.CreateCommand();
 
             //create a SELECT query 
-            command.CommandText = "SELECT *" +
+            command.CommandText = "SELECT * " +
                                   "FROM teachers " +
-                                  "WHERE CONCAT(teacherfname, ' ', teacherlname) = @name OR " +
-                                  "teacherfname = @name OR " +
-                                  "teacherlname = @name";
-            command.Parameters.AddWithValue("@name", name);
+                                  "WHERE (CONCAT(teacherfname, ' ', teacherlname) = @name " +
+                                  "OR teacherfname like @name " +
+                                  "OR teacherlname like @name) ";
+            
+            command.Parameters.AddWithValue("@name", teacherName);
+            if(!String.IsNullOrEmpty(fromHireDate))
+            {
+                command.CommandText += " AND hiredate >= @fromDate ";
+                command.Parameters.AddWithValue("@fromDate", fromHireDate);
+            }
+
+            if (!String.IsNullOrEmpty(toHireDate))
+            {
+                command.CommandText += " AND hiredate <= @toDate ";
+                command.Parameters.AddWithValue("@toDate", toHireDate);
+            }
+
+            if(!String.IsNullOrEmpty(fromSalary))
+            {
+                command.CommandText += " AND salary >= @fromSalary ";
+                command.Parameters.AddWithValue("@fromSalary", fromSalary);
+            }
+
+            if (!String.IsNullOrEmpty(toSalary))
+            {
+                command.CommandText += " AND salary <= @toSalary ";
+                command.Parameters.AddWithValue("@toSalary", toSalary);
+            }
+           
             command.Prepare();
 
             //Gather result set of query into a variable
@@ -97,11 +124,12 @@ namespace n01458860CumulativePart1.Controllers
             {
                 foundTeacher = new Teacher( dbReader["teacherid"].ToString(), dbReader["teacherfname"].ToString(), dbReader["teacherlname"].ToString(),
                      dbReader["employeenumber"].ToString(), dbReader["hiredate"].ToString(), dbReader["salary"].ToString());
+                foundTeachers.Add(foundTeacher);
             }
 
             //Close connection between database and webserver after loading data
             dbConnection.Close();
-            return foundTeacher;
+            return foundTeachers;
         }
 
         /// <summary>
@@ -278,6 +306,39 @@ namespace n01458860CumulativePart1.Controllers
 
             //Close the connection between database and web server
             dbConnection.Close();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <example>
+        /// POST: api/TeacherData/DeleteTeacher/1
+        /// </example>
+        [HttpPost]
+        public void DeleteTeacher(int id)
+        {
+            //Create an instance of a database connection
+            MySqlConnection dbConnection = dbContext.AccessDatabase();
+
+            //Open database connection
+            dbConnection.Open();
+
+            //establish a new command for our database
+            MySqlCommand command = dbConnection.CreateCommand();
+
+            //Create Delete query
+            command.CommandText = "Delete from teachers where teacherid = @id";
+            command.Parameters.AddWithValue("@id",id);
+            command.Prepare();
+
+            //Execute not select statement
+            command.ExecuteNonQuery();
+            
+
+            //Close database connection
+            dbConnection.Close();
+
         }
     }
 }

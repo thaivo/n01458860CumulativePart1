@@ -15,3 +15,23 @@ select,
 textarea {
     max-width: 280px;
 }
+
+nav {
+    overflow:hidden;
+    margin-bottom:30px;
+}
+.navlink{
+    text-align:right;
+    float:right;
+}
+
+.dellink {
+    float: left;
+    color:#dd1111;
+}
+
+#containershow {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 80px;
+}
