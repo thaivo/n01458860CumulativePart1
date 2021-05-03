@@ -36,7 +36,7 @@ namespace n01458860CumulativePart1.Models
         /// this method will return database connection.
         /// </summary>
         /// <returns>database connection</returns>
-        public MySqlConnection AccessDatabase()
+        public static MySqlConnection AccessDatabase()
         {
             return new MySqlConnection(ConnectionString);
         }

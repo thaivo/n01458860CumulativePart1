@@ -12,7 +12,7 @@ namespace n01458860CumulativePart1.Controllers
 {
     public class ClassDataController : ApiController
     {
-        private SchoolDbContext dbContext = new SchoolDbContext();
+        MySqlConnection dbConnection = SchoolDbContext.AccessDatabase();
 
         /// <summary>
         /// Return classes of a teacher
@@ -26,9 +26,6 @@ namespace n01458860CumulativePart1.Controllers
         [Route("api/classdata/FindClassesByTeacherId/{teacherId}")]
         public List<Class> FindClassesByTeacherId(int teacherId)
         {
-            //instantiate a database connection
-            MySqlConnection dbConnection = dbContext.AccessDatabase();
-
             //Open a connection between database and web server
             dbConnection.Open();
 

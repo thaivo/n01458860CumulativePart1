@@ -10,6 +10,8 @@ namespace n01458860CumulativePart1.Controllers
 {
     public class TeacherController : Controller
     {
+
+        TeacherDataController teacherDataController = new TeacherDataController();
         //Search interface 
         // GET: Teacher
         public ActionResult Index()
@@ -19,15 +21,22 @@ namespace n01458860CumulativePart1.Controllers
         //GET: /Teacher/List
         public ActionResult List()
         {
-            TeacherDataController teacherDataController = new TeacherDataController();
-            List<Teacher> teachers = teacherDataController.GetTeachers();
 
-            return View(teachers);
+            try
+            {
+                List<Teacher> teachers = teacherDataController.GetTeachers();
+
+                return View(teachers);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
         }
         //GET: /Teacher/Show/{id}
         public ActionResult Show(int id)
         {
-            TeacherDataController teacherDataController = new TeacherDataController();
             Teacher foundTeacher = teacherDataController.FindTeacherById(id);
 
             ClassDataController classDataController = new ClassDataController();
@@ -49,9 +58,18 @@ namespace n01458860CumulativePart1.Controllers
             Debug.WriteLine("hiredateToBox: " + hiredateToBox);
             Debug.WriteLine("salaryFromBox: " + salaryFromBox);
             Debug.WriteLine("salaryToBox: " + salaryToBox);
-            TeacherDataController teacherDataController = new TeacherDataController();
-            List<Teacher> foundTeachers = teacherDataController.FindTeachers(nameBox, hiredateFromBox, hiredateToBox, salaryFromBox, salaryToBox);
-            return View(foundTeachers);
+            
+            
+            try
+            {
+                List<Teacher> foundTeachers = teacherDataController.FindTeachers(nameBox, hiredateFromBox, hiredateToBox, salaryFromBox, salaryToBox);
+                return View(foundTeachers);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
         }
 
         public ActionResult Add()
@@ -84,7 +102,7 @@ namespace n01458860CumulativePart1.Controllers
             
 
             Teacher newTeacher = new Teacher(fname, lname, number, hiredate, salary);
-            TeacherDataController teacherDataController = new TeacherDataController();
+         
             teacherDataController.AddTeacher(newTeacher);
 
             return RedirectToAction("List");
@@ -95,20 +113,45 @@ namespace n01458860CumulativePart1.Controllers
             return View();
         }
 
+        //GET: /Teacher/Error
+        /// <summary>
+        /// This window is for showing Teacher specific Errors!
+        /// </summary>
+        public ActionResult Error()
+        {
+            return View();
+        }
+
         //GET: /Teacher/DeleteConfirm/{id}
         public ActionResult DeleteConfirm(int id)
         {
-            TeacherDataController teacherDataController = new TeacherDataController();
-            Teacher foundTeacher = teacherDataController.FindTeacherById(id);
-            return View(foundTeacher);
+            
+            try
+            {
+                Teacher foundTeacher = teacherDataController.FindTeacherById(id);
+                return View(foundTeacher);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
         }
 
         //POST: /Teacher/Delete/{id}
         public ActionResult Delete(int id)
         {
-            TeacherDataController teacherDataController = new TeacherDataController();
-            teacherDataController.DeleteTeacher(id);
-            return RedirectToAction("List");
+           
+            try
+            {
+                teacherDataController.DeleteTeacher(id);
+                return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
         }
 
         //GET: /Teacher/Update/{id}
@@ -116,32 +159,64 @@ namespace n01458860CumulativePart1.Controllers
         [HttpGet]
         public ActionResult Update(int id)
         {
-            TeacherDataController teacherDataController = new TeacherDataController();
-            Teacher selectedTeacher = teacherDataController.FindTeacherById(id);
-            return View(selectedTeacher);
+            try
+            {
+                Teacher selectedTeacher = teacherDataController.FindTeacherById(id);
+                return View(selectedTeacher);
+            }
+            catch(Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+            
         }
 
         //POST: /Teacher/Update/{id}
         //Binds the teacher data submitted by the user and call the data access method
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="fname"></param>
+        /// <param name="lname"></param>
+        /// <param name="number"></param>
+        /// <param name="salary"></param>
+        /// <param name="hiredate"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult Update(int id, string fname, string lname, string number, string salary, string hiredate)
         {
             Debug.WriteLine("Teacher is " + fname + " " + lname);
-
-            Teacher updateTeacherInfo = new Teacher(fname, lname, number, hiredate, salary);
-            updateTeacherInfo.id = id.ToString();
-            //Call the data access logic to update this teacher
-            TeacherDataController teacherDataController = new TeacherDataController();
-            teacherDataController.updateTeacher(id,updateTeacherInfo);
+            try
+            {
+                Teacher updateTeacherInfo = new Teacher(fname, lname, number, hiredate, salary);
+                updateTeacherInfo.id = id.ToString();
+                //Call the data access logic to update this teacher
+                TeacherDataController teacherDataController = new TeacherDataController();
+                teacherDataController.updateTeacher(id, updateTeacherInfo);
+            }
+            catch(Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
 
             return RedirectToAction("Show/" + id);
         }
 
         public ActionResult Ajax_update(int id)
         {
-            TeacherDataController teacherDataController = new TeacherDataController();
-            Teacher SelectedTeacher = teacherDataController.FindTeacherById(id);
-            return View(SelectedTeacher);
+            try
+            {
+                Teacher SelectedTeacher = teacherDataController.FindTeacherById(id);
+                return View(SelectedTeacher);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
         }
     }
 

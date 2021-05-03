@@ -320,6 +320,7 @@
     <Content Include="Views\Teacher\ErrorValidation.cshtml" />
     <Content Include="Views\Teacher\Update.cshtml" />
     <Content Include="Views\Teacher\Ajax_update.cshtml" />
+    <Content Include="Views\Home\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -7,13 +7,14 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using n01458860CumulativePart1.Models;
 using MySql.Data.MySqlClient;
-
+using System.Diagnostics;
 
 namespace n01458860CumulativePart1.Controllers
 {
     public class TeacherDataController : ApiController
     {
-        private SchoolDbContext dbContext = new SchoolDbContext();
+        //Create an instance of a connection
+        MySqlConnection dbConnection = SchoolDbContext.AccessDatabase();
 
         /// <summary>
         /// Finding a teacher by id
@@ -27,32 +28,47 @@ namespace n01458860CumulativePart1.Controllers
         [Route("api/teacherdata/findteacherbyid/{id}")]
         public Teacher FindTeacherById(int id)
         {
-            //Establish a database connection
-            MySqlConnection dbConnection = dbContext.AccessDatabase();
-
-            //Open database connection
-            dbConnection.Open();
-
-            //Establish a query into a variable
-            MySqlCommand command = dbConnection.CreateCommand();
-
-            //Create a SELECT query
-            command.CommandText = "SELECT * FROM teachers WHERE teacherid = @id";
-            command.Parameters.AddWithValue("@id", id);
-            command.Prepare();
-
-            //Gather result set of a query into a variable
-            MySqlDataReader dbreader = command.ExecuteReader();
-
             Teacher foundTeacher = null;
-            while (dbreader.Read())
+            try
             {
-                foundTeacher = new Teacher(id.ToString(), dbreader["teacherfname"].ToString(), dbreader["teacherlname"].ToString(),
-                                           dbreader["employeenumber"].ToString(), dbreader["hiredate"].ToString(), dbreader["salary"].ToString());
-            }
+                //Open database connection
+                dbConnection.Open();
 
-            //Close database connection
-            dbConnection.Close();
+                //Establish a query into a variable
+                MySqlCommand command = dbConnection.CreateCommand();
+
+                //Create a SELECT query
+                command.CommandText = "SELECT * FROM teachers WHERE teacherid = @id";
+                command.Parameters.AddWithValue("@id", id);
+                command.Prepare();
+
+                //Gather result set of a query into a variable
+                MySqlDataReader dbreader = command.ExecuteReader();
+
+                
+                while (dbreader.Read())
+                {
+                    foundTeacher = new Teacher(id.ToString(), dbreader["teacherfname"].ToString(), dbreader["teacherlname"].ToString(),
+                                               dbreader["employeenumber"].ToString(), dbreader["hiredate"].ToString(), dbreader["salary"].ToString());
+                }
+            }
+            catch (MySqlException ex)
+            {
+                //Catches issues with MySQL.
+                Debug.WriteLine(ex);
+                throw new ApplicationException("Issue was a database issue.", ex);
+            }
+            catch (Exception ex)
+            {
+                //Catches generic issues
+                Debug.Write(ex);
+                throw new ApplicationException("There was a server issue.", ex);
+            }
+            finally
+            {
+                //Close a connection between database and web server.
+                dbConnection.Close();
+            }
             return foundTeacher;
         }
 
@@ -72,63 +88,77 @@ namespace n01458860CumulativePart1.Controllers
         {
             ;
             List<Teacher> foundTeachers = new List<Teacher>() ;
-            //create an instance of a connection;
-            MySqlConnection dbConnection = dbContext.AccessDatabase();
-
-            //Open a connection between web server and database
-            dbConnection.Open();
-
-            //Establish a new command (query) for database
-            MySqlCommand command = dbConnection.CreateCommand();
-
-            //create a SELECT query 
-            command.CommandText = "SELECT * " +
-                                  "FROM teachers " +
-                                  "WHERE (CONCAT(teacherfname, ' ', teacherlname) = @name " +
-                                  "OR teacherfname like @name " +
-                                  "OR teacherlname like @name) ";
-            
-            command.Parameters.AddWithValue("@name", teacherName);
-            if(!String.IsNullOrEmpty(fromHireDate))
+            try
             {
-                command.CommandText += " AND hiredate >= @fromDate ";
-                command.Parameters.AddWithValue("@fromDate", fromHireDate);
-            }
+                //Open a connection between web server and database
+                dbConnection.Open();
 
-            if (!String.IsNullOrEmpty(toHireDate))
+                //Establish a new command (query) for database
+                MySqlCommand command = dbConnection.CreateCommand();
+
+                //create a SELECT query 
+                command.CommandText = "SELECT * " +
+                                      "FROM teachers " +
+                                      "WHERE (CONCAT(teacherfname, ' ', teacherlname) = @name " +
+                                      "OR teacherfname like @name " +
+                                      "OR teacherlname like @name) ";
+
+                command.Parameters.AddWithValue("@name", teacherName);
+                if (!String.IsNullOrEmpty(fromHireDate))
+                {
+                    command.CommandText += " AND hiredate >= @fromDate ";
+                    command.Parameters.AddWithValue("@fromDate", fromHireDate);
+                }
+
+                if (!String.IsNullOrEmpty(toHireDate))
+                {
+                    command.CommandText += " AND hiredate <= @toDate ";
+                    command.Parameters.AddWithValue("@toDate", toHireDate);
+                }
+
+                if (!String.IsNullOrEmpty(fromSalary))
+                {
+                    command.CommandText += " AND salary >= @fromSalary ";
+                    command.Parameters.AddWithValue("@fromSalary", fromSalary);
+                }
+
+                if (!String.IsNullOrEmpty(toSalary))
+                {
+                    command.CommandText += " AND salary <= @toSalary ";
+                    command.Parameters.AddWithValue("@toSalary", toSalary);
+                }
+
+                command.Prepare();
+
+                //Gather result set of query into a variable
+                MySqlDataReader dbReader = command.ExecuteReader();
+
+                Teacher foundTeacher = null;
+                //Loop through each row result set
+                while (dbReader.Read())
+                {
+                    foundTeacher = new Teacher(dbReader["teacherid"].ToString(), dbReader["teacherfname"].ToString(), dbReader["teacherlname"].ToString(),
+                         dbReader["employeenumber"].ToString(), dbReader["hiredate"].ToString(), dbReader["salary"].ToString());
+                    foundTeachers.Add(foundTeacher);
+                }
+            }
+            catch (MySqlException ex)
             {
-                command.CommandText += " AND hiredate <= @toDate ";
-                command.Parameters.AddWithValue("@toDate", toHireDate);
+                //Catches issues with MySQL.
+                Debug.WriteLine(ex);
+                throw new ApplicationException("Issue was a database issue.", ex);
             }
-
-            if(!String.IsNullOrEmpty(fromSalary))
+            catch (Exception ex)
             {
-                command.CommandText += " AND salary >= @fromSalary ";
-                command.Parameters.AddWithValue("@fromSalary", fromSalary);
+                //Catches generic issues
+                Debug.Write(ex);
+                throw new ApplicationException("There was a server issue.", ex);
             }
-
-            if (!String.IsNullOrEmpty(toSalary))
+            finally
             {
-                command.CommandText += " AND salary <= @toSalary ";
-                command.Parameters.AddWithValue("@toSalary", toSalary);
+                //Close a connection between database and web server.
+                dbConnection.Close();
             }
-           
-            command.Prepare();
-
-            //Gather result set of query into a variable
-            MySqlDataReader dbReader = command.ExecuteReader();
-
-            Teacher foundTeacher = null;
-            //Loop through each row result set
-            while (dbReader.Read())
-            {
-                foundTeacher = new Teacher( dbReader["teacherid"].ToString(), dbReader["teacherfname"].ToString(), dbReader["teacherlname"].ToString(),
-                     dbReader["employeenumber"].ToString(), dbReader["hiredate"].ToString(), dbReader["salary"].ToString());
-                foundTeachers.Add(foundTeacher);
-            }
-
-            //Close connection between database and webserver after loading data
-            dbConnection.Close();
             return foundTeachers;
         }
 
@@ -144,9 +174,6 @@ namespace n01458860CumulativePart1.Controllers
         [Route("api/teacherdata/findteacherbyhiredate/{hiredate}")]
         public Teacher FindTeacherByHireDate(string hiredate)
         {
-            //Create an instance of a connection
-            MySqlConnection dbConnection = dbContext.AccessDatabase();
-
             //Open a connection between database and web server
             dbConnection.Open();
 
@@ -188,9 +215,6 @@ namespace n01458860CumulativePart1.Controllers
         [Route("api/teacherdata/findteacherbysalary/{salary}")]
         public Teacher FindTeacherBySalary(string salary)
         {
-            //Create an instance of a database connection
-            MySqlConnection dbConnection = dbContext.AccessDatabase();
-
             //Open a connection between database and web server
             dbConnection.Open();
 
@@ -233,33 +257,48 @@ namespace n01458860CumulativePart1.Controllers
         [Route("api/teacherdata/getteachers")]
         public List<Teacher> GetTeachers()
         {
-            //create an instance of a database connection
-            MySqlConnection dbConn = dbContext.AccessDatabase();
-
-            //Open a connection between database and web server
-            dbConn.Open();
-
-            //Establish a command for database
-            MySqlCommand command = dbConn.CreateCommand();
-
-            //Create a SELECT query
-            command.CommandText = "SELECT * FROM teachers";
-
-            //Gather  result set of a query into a variable
-            MySqlDataReader dbreader = command.ExecuteReader();
-
             List<Teacher> teachers = new List<Teacher>();
-
-            //Check whether there is any next record or not
-            while(dbreader.Read())
+            try
             {
-                Teacher teacher = new Teacher(dbreader["teacherid"].ToString(), dbreader["teacherfname"].ToString(), dbreader["teacherlname"].ToString(),
-                                             dbreader["employeenumber"].ToString(), dbreader["hiredate"].ToString(), dbreader["salary"].ToString());
-                teachers.Add(teacher);
-            }
+                //Open a connection between database and web server
+                dbConnection.Open();
 
-            //Close a connection between database and web server.
-            dbConn.Close();
+                //Establish a command for database
+                MySqlCommand command = dbConnection.CreateCommand();
+
+                //Create a SELECT query
+                command.CommandText = "SELECT * FROM teachers";
+
+                //Gather  result set of a query into a variable
+                MySqlDataReader dbreader = command.ExecuteReader();
+
+                
+
+                //Check whether there is any next record or not
+                while (dbreader.Read())
+                {
+                    Teacher teacher = new Teacher(dbreader["teacherid"].ToString(), dbreader["teacherfname"].ToString(), dbreader["teacherlname"].ToString(),
+                                                 dbreader["employeenumber"].ToString(), dbreader["hiredate"].ToString(), dbreader["salary"].ToString());
+                    teachers.Add(teacher);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                //Catches issues with MySQL.
+                Debug.WriteLine(ex);
+                throw new ApplicationException("Issue was a database issue.", ex);
+            }
+            catch (Exception ex)
+            {
+                //Catches generic issues
+                Debug.Write(ex);
+                throw new ApplicationException("There was a server issue.", ex);
+            }
+            finally
+            {
+                //Close a connection between database and web server.
+                dbConnection.Close();
+            }
             return teachers;
         }
 
@@ -283,29 +322,43 @@ namespace n01458860CumulativePart1.Controllers
         [EnableCors(origins:"*", methods: "*", headers: "*")]
         public void AddTeacher([FromBody]Teacher NewTeacher)
         {
-            //Create an instance of a connection
-            MySqlConnection dbConnection = dbContext.AccessDatabase();
+            try
+            {
+                //Open the connection between database and web server
+                dbConnection.Open();
 
-            //Open the connection between database and web server
-            dbConnection.Open();
+                //Establish a new command for our database 
+                MySqlCommand command = dbConnection.CreateCommand();
 
-            //Establish a new command for our database 
-            MySqlCommand command = dbConnection.CreateCommand();
+                //SQL QUERY
+                command.CommandText = "insert into teachers (teacherfname, teacherlname, employeenumber, hiredate,salary) " +
+                    "values (@TeacherFname, @TeacherLname, @TeacherNumber, CURRENT_DATE(), @TeacherSalary)";
+                command.Parameters.AddWithValue("@TeacherFname", NewTeacher.fname);
+                command.Parameters.AddWithValue("@TeacherLname", NewTeacher.lname);
+                command.Parameters.AddWithValue("@TeacherNumber", NewTeacher.number);
+                command.Parameters.AddWithValue("@TeacherSalary", NewTeacher.salary);
+                command.Prepare();
 
-            //SQL QUERY
-            command.CommandText = "insert into teachers (teacherfname, teacherlname, employeenumber, hiredate,salary) " +
-                "values (@TeacherFname, @TeacherLname, @TeacherNumber, CURRENT_DATE(), @TeacherSalary)";
-            command.Parameters.AddWithValue("@TeacherFname",NewTeacher.fname);
-            command.Parameters.AddWithValue("@TeacherLname",NewTeacher.lname);
-            command.Parameters.AddWithValue("@TeacherNumber",NewTeacher.number);
-            command.Parameters.AddWithValue("@TeacherSalary",NewTeacher.salary);
-            command.Prepare();
-
-            //Execute the insert statement
-            command.ExecuteNonQuery();
-
-            //Close the connection between database and web server
-            dbConnection.Close();
+                //Execute the insert statement
+                command.ExecuteNonQuery();
+            }
+            catch (MySqlException ex)
+            {
+                //Catches issues with MySQL.
+                Debug.WriteLine(ex);
+                throw new ApplicationException("Issue was a database issue.", ex);
+            }
+            catch (Exception ex)
+            {
+                //Catches generic issues
+                Debug.Write(ex);
+                throw new ApplicationException("There was a server issue.", ex);
+            }
+            finally
+            {
+                //Close a connection between database and web server.
+                dbConnection.Close();
+            }
         }
 
         /// <summary>
@@ -318,26 +371,39 @@ namespace n01458860CumulativePart1.Controllers
         [HttpPost]
         public void DeleteTeacher(int id)
         {
-            //Create an instance of a database connection
-            MySqlConnection dbConnection = dbContext.AccessDatabase();
+            try
+            {
+                //Open database connection
+                dbConnection.Open();
 
-            //Open database connection
-            dbConnection.Open();
+                //establish a new command for our database
+                MySqlCommand command = dbConnection.CreateCommand();
 
-            //establish a new command for our database
-            MySqlCommand command = dbConnection.CreateCommand();
+                //Create Delete query
+                command.CommandText = "Delete from teachers where teacherid = @id";
+                command.Parameters.AddWithValue("@id", id);
+                command.Prepare();
 
-            //Create Delete query
-            command.CommandText = "Delete from teachers where teacherid = @id";
-            command.Parameters.AddWithValue("@id",id);
-            command.Prepare();
-
-            //Execute not select statement
-            command.ExecuteNonQuery();
-            
-
-            //Close database connection
-            dbConnection.Close();
+                //Execute not select statement
+                command.ExecuteNonQuery();
+            }
+            catch (MySqlException ex)
+            {
+                //Catches issues with MySQL.
+                Debug.WriteLine(ex);
+                throw new ApplicationException("Issue was a database issue.", ex);
+            }
+            catch (Exception ex)
+            {
+                //Catches generic issues
+                Debug.Write(ex);
+                throw new ApplicationException("There was a server issue.", ex);
+            }
+            finally
+            {
+                //Close a connection between database and web server.
+                dbConnection.Close();
+            }
 
         }
 
@@ -354,31 +420,50 @@ namespace n01458860CumulativePart1.Controllers
         ///	"fname":"Christine",
         ///	"lname":"Bittle",
         ///	"number":"T234",
-        ///	"salary":"70"
+        ///	"salary":"70",
+        ///	"hiredate": "2020-05-20"
         /// }
         [HttpPost]
         [Route("api/TeacherData/UpdateTeacher/{id}")]
         [EnableCors(origins: "*", methods: "*", headers: "*")]
         public void updateTeacher(int id,[FromBody]Teacher updateTeacher)
         {
-            MySqlConnection dbConnection = dbContext.AccessDatabase();
+            
+            try
+            {
+                dbConnection.Open();
 
-            dbConnection.Open();
+                MySqlCommand cmd = dbConnection.CreateCommand();
 
-            MySqlCommand cmd = dbConnection.CreateCommand();
+                cmd.CommandText = "Update teachers set teacherfname = @fname, teacherlname = @lname, employeenumber=@number, salary=@salary, hiredate=@hiredate where teacherid=@id";
 
-            cmd.CommandText = "Update teachers set teacherfname = @fname, teacherlname = @lname, employeenumber=@number, salary=@salary, hiredate=@hiredate where teacherid=@id";
+                cmd.Parameters.AddWithValue("@fname", updateTeacher.fname);
+                cmd.Parameters.AddWithValue("@lname", updateTeacher.lname);
+                cmd.Parameters.AddWithValue("@number", updateTeacher.number);
+                cmd.Parameters.AddWithValue("@salary", updateTeacher.salary);
+                cmd.Parameters.AddWithValue("@hiredate", updateTeacher.hiredate);
+                cmd.Parameters.AddWithValue("@id", id);
 
-            cmd.Parameters.AddWithValue("@fname",updateTeacher.fname);
-            cmd.Parameters.AddWithValue("@lname",updateTeacher.lname);
-            cmd.Parameters.AddWithValue("@number",updateTeacher.number);
-            cmd.Parameters.AddWithValue("@salary",updateTeacher.salary);
-            cmd.Parameters.AddWithValue("@hiredate", updateTeacher.hiredate);
-            cmd.Parameters.AddWithValue("@id",id);
-
-            cmd.Prepare();
-            cmd.ExecuteNonQuery();
-            dbConnection.Close();
+                cmd.Prepare();
+                cmd.ExecuteNonQuery();
+            }
+            catch (MySqlException ex)
+            {
+                //Catches issues with MySQL.
+                Debug.WriteLine(ex);
+                throw new ApplicationException("Issue was a database issue.", ex);
+            }
+            catch (Exception ex)
+            {
+                //Catches generic issues
+                Debug.Write(ex);
+                throw new ApplicationException("There was a server issue.", ex);
+            }
+            finally
+            {
+                //Close a connection between database and web server.
+                dbConnection.Close();
+            }
         }
     }
 }
