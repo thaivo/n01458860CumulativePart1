@@ -414,11 +414,11 @@ namespace n01458860CumulativePart1.Controllers
         /// <return>
         ///     Nothing
         /// </return>
-        /// POST api/TeacherData/AddTeacher
+        /// POST api/TeacherData/UpdateTeacher/22
         /// FORM DATA / POST DATA / REQUEST BODY 
         /// {
-        ///	"fname":"Christine",
-        ///	"lname":"Bittle",
+        ///	"fname":"Nguyen",
+        ///	"lname":"Vo",
         ///	"number":"T234",
         ///	"salary":"70",
         ///	"hiredate": "2020-05-20"

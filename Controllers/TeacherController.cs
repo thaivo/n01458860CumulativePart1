@@ -173,17 +173,31 @@ namespace n01458860CumulativePart1.Controllers
         }
 
         //POST: /Teacher/Update/{id}
-        //Binds the teacher data submitted by the user and call the data access method
+
         /// <summary>
-        /// 
+        /// Receives a POST request containing information about an existing teacher in the system, with new values. Conveys this information to the API, and redirects to the "teacher show" page of our updated teacher.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="fname"></param>
-        /// <param name="lname"></param>
-        /// <param name="number"></param>
-        /// <param name="salary"></param>
-        /// <param name="hiredate"></param>
-        /// <returns></returns>
+        /// <param name="id">Id of the teacher to update</param>
+        /// <param name="fname">the updated first name of the teacher</param>
+        /// <param name="lname">the updated last name of the teacher</param>
+        /// <param name="number">the updated number of the teacher</param>
+        /// <param name="salary">the updated salary of the teacher</param>
+        /// <param name="hiredate">the updated hiredate of the teacher</param>
+        /// <returns>
+        /// A dynamice webpage which provides the current information of the teacher.
+        /// </returns>
+        /// <example>
+        /// POST:/Teacher/Update/22
+        /// FORM DATA/ POST DATA/ REQUEST BODY
+        /// {
+        /// ///	"fname":"Nguyen",
+        ///	"lname":"Vo",
+        ///	"number":"T234",
+        ///	"salary":"70",
+        ///	"hiredate": "2020-05-20"
+        /// }
+        /// </example>
+        /// 
         [HttpPost]
         public ActionResult Update(int id, string fname, string lname, string number, string salary, string hiredate)
         {
@@ -205,6 +219,11 @@ namespace n01458860CumulativePart1.Controllers
             return RedirectToAction("Show/" + id);
         }
 
+        /// <summary>
+        /// Routes to a dynamically rendered "Ajax Update" Page. The "Ajax Update" page will utilize Js to send an HTTP request to the data access layer
+        /// </summary>
+        /// <param name="id">id of a teacher</param>
+        /// <returns></returns>
         public ActionResult Ajax_update(int id)
         {
             try
