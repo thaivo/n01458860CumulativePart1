@@ -35,3 +35,12 @@ nav {
     margin: 0 auto;
     margin-top: 80px;
 }
+
+#menu > ul {
+    list-style-type: none;
+}
+
+#menu > ul li{
+    display:inline;
+    margin-right:50px;
+}

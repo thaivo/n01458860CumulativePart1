@@ -1,0 +1,34 @@
+﻿@model n01458860CumulativePart1.Models.Teacher
+@{
+    ViewBag.Title = "Ajax_update";
+}
+
+
+<nav>
+    <a class="navlink" href="/Teacher/List">Back to Teachers</a>
+</nav>
+<h2>Update @Model.fname @Model.lname</h2>
+
+<div>
+    <lable for="fname">First name:</lable>
+    <input id="fname" name="fname" value="@Model.fname" />
+</div>
+<div>
+    <lable for="lname">Last name:</lable>
+    <input id="lname" name="lname" value="@Model.lname" />
+</div>
+<div>
+    <lable for="number">Number:</lable>
+    <input id="number" name="number" value="@Model.number" />
+</div>
+<div>
+    <lable for="hiredate">Hire date:</lable>
+    <input id="hiredate" name="hiredate" value="@Model.hiredate" />
+</div>
+<div>
+    <lable for="salary">Salary:</lable>
+    <input id="salary" name="salary" value="@Model.salary" />
+</div>
+<div>
+    <button onclick="updateTeacher(@Model.id);">Update teacher</button>
+</div>

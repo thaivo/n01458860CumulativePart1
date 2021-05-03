@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
+using System.Globalization;
 
 namespace n01458860CumulativePart1.Models
 {
@@ -29,6 +30,16 @@ namespace n01458860CumulativePart1.Models
             this.lname = lname;
             this.number = number;
             this.hiredate = hiredate;
+            this.salary = salary;
+        }
+
+        public Teacher(string fname, string lname, string number, string hiredate, string salary)
+        {
+            
+            this.fname = fname;
+            this.lname = lname;
+            this.number = number;
+            this.hiredate = hiredate.Split(' ')[0];//get date only
             this.salary = salary;
         }
         public Teacher(string fname, string lname, string number, string salary)

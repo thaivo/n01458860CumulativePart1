@@ -309,9 +309,9 @@ namespace n01458860CumulativePart1.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Delete a teacher based on id of that deleted teacher
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">id of teacher</param>
         /// <example>
         /// POST: api/TeacherData/DeleteTeacher/1
         /// </example>
@@ -339,6 +339,46 @@ namespace n01458860CumulativePart1.Controllers
             //Close database connection
             dbConnection.Close();
 
+        }
+
+        /// <summary>
+        /// Update a certain teacher based on the information of the parameter
+        /// </summary>
+        /// <param name="updateTeacher"></param>
+        /// <return>
+        ///     Nothing
+        /// </return>
+        /// POST api/TeacherData/AddTeacher
+        /// FORM DATA / POST DATA / REQUEST BODY 
+        /// {
+        ///	"fname":"Christine",
+        ///	"lname":"Bittle",
+        ///	"number":"T234",
+        ///	"salary":"70"
+        /// }
+        [HttpPost]
+        [Route("api/TeacherData/UpdateTeacher/{id}")]
+        [EnableCors(origins: "*", methods: "*", headers: "*")]
+        public void updateTeacher(int id,[FromBody]Teacher updateTeacher)
+        {
+            MySqlConnection dbConnection = dbContext.AccessDatabase();
+
+            dbConnection.Open();
+
+            MySqlCommand cmd = dbConnection.CreateCommand();
+
+            cmd.CommandText = "Update teachers set teacherfname = @fname, teacherlname = @lname, employeenumber=@number, salary=@salary, hiredate=@hiredate where teacherid=@id";
+
+            cmd.Parameters.AddWithValue("@fname",updateTeacher.fname);
+            cmd.Parameters.AddWithValue("@lname",updateTeacher.lname);
+            cmd.Parameters.AddWithValue("@number",updateTeacher.number);
+            cmd.Parameters.AddWithValue("@salary",updateTeacher.salary);
+            cmd.Parameters.AddWithValue("@hiredate", updateTeacher.hiredate);
+            cmd.Parameters.AddWithValue("@id",id);
+
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+            dbConnection.Close();
         }
     }
 }

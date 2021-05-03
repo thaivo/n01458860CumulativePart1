@@ -1,0 +1,33 @@
+﻿@model n01458860CumulativePart1.Models.Teacher
+@{
+    ViewBag.Title = "Update";
+}
+
+<h2>Update teacher</h2>
+<form action="/Teacher/Update/@Model.id" method="POST" name="teacherForm" onsubmit="return validateTeacherForm();">
+    <div>
+        <label>First name:</label>
+        <input type="text" value="@Model.fname" name="fname" />
+    </div>
+    <div>
+        <label>First name:</label>
+        <input type="text" value="@Model.lname" name="lname" />
+    </div>
+    <div>
+        <label>Teacher number:</label>
+        <input type="text" value="@Model.number" name="number" />
+    </div>
+    <div>
+        <label>Hire date:</label>
+        <input type="text" value="@Model.hiredate" name="hiredate" />
+    </div>
+    <div>
+        <label>Teacher salary:</label>
+        <input type="text" value="@Model.salary" name="salary" />
+    </div>
+    <div>
+        <input type="submit" value="Update teacher" />
+    </div>
+
+</form>
+

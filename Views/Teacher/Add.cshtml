@@ -1,10 +1,10 @@
 ﻿
 @{
-    ViewBag.Title = "New";
+    ViewBag.Title = "Add";
 }
 
 <h2>New Teacher</h2>
-<form method="POST" action="/Teacher/Create" name="teacherForm">
+<form method="POST" action="/Teacher/Create" name="teacherForm" onsubmit="return validateTeacherInfo();">
     <div>
         <label for="fname">First name:</label>
         <input type="text" id="fname" name="fname" />
@@ -16,6 +16,10 @@
     <div>
         <label for="number">Teacher number:</label>
         <input type="text" id="number" name="number" />
+    </div>
+    <div>
+        <label for="hiredate">Hire date:</label>
+        <input type="text" id="hiredate" name="hiredate" />
     </div>
     <div>
         <label for="salary">Salary:</label>

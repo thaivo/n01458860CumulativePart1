@@ -4,7 +4,7 @@
 }
 
 <h2>Index</h2>
-<form action="/Teacher/Search" method="post" name="searchForm">
+<form action="/Teacher/Search" method="post" name="searchForm" onsubmit="return searchTeacher()">
     <input type="checkbox" id="nameCheckBox" name="nameCheckBox" value="" />
     <label for="nameCheckBox">name</label>
     <input type="checkbox" id="hiredateCheckBox" name="hiredateCheckBox" value="hiredate" />

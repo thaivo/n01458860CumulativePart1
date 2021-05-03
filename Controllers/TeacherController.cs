@@ -54,14 +54,14 @@ namespace n01458860CumulativePart1.Controllers
             return View(foundTeachers);
         }
 
-        public ActionResult New()
+        public ActionResult Add()
         {
             return View();
         }
 
         //POST: /Teacher/Create
         [HttpPost]
-        public ActionResult Create(string fname, string lname, string number, string salary)
+        public ActionResult Create(string fname, string lname, string number, string hiredate, string salary)
         {
             Debug.WriteLine("I have accessed the Create Method!");
             Debug.WriteLine(fname);
@@ -83,7 +83,7 @@ namespace n01458860CumulativePart1.Controllers
             }
             
 
-            Teacher newTeacher = new Teacher(fname, lname, number, salary);
+            Teacher newTeacher = new Teacher(fname, lname, number, hiredate, salary);
             TeacherDataController teacherDataController = new TeacherDataController();
             teacherDataController.AddTeacher(newTeacher);
 
@@ -111,5 +111,39 @@ namespace n01458860CumulativePart1.Controllers
             return RedirectToAction("List");
         }
 
+        //GET: /Teacher/Update/{id}
+        //Represent the teacher with current data
+        [HttpGet]
+        public ActionResult Update(int id)
+        {
+            TeacherDataController teacherDataController = new TeacherDataController();
+            Teacher selectedTeacher = teacherDataController.FindTeacherById(id);
+            return View(selectedTeacher);
+        }
+
+        //POST: /Teacher/Update/{id}
+        //Binds the teacher data submitted by the user and call the data access method
+        [HttpPost]
+        public ActionResult Update(int id, string fname, string lname, string number, string salary, string hiredate)
+        {
+            Debug.WriteLine("Teacher is " + fname + " " + lname);
+
+            Teacher updateTeacherInfo = new Teacher(fname, lname, number, hiredate, salary);
+            updateTeacherInfo.id = id.ToString();
+            //Call the data access logic to update this teacher
+            TeacherDataController teacherDataController = new TeacherDataController();
+            teacherDataController.updateTeacher(id,updateTeacherInfo);
+
+            return RedirectToAction("Show/" + id);
+        }
+
+        public ActionResult Ajax_update(int id)
+        {
+            TeacherDataController teacherDataController = new TeacherDataController();
+            Teacher SelectedTeacher = teacherDataController.FindTeacherById(id);
+            return View(SelectedTeacher);
+        }
     }
+
+
 }

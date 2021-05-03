@@ -4,9 +4,21 @@
 }
 
 <div id="containershow">
-    <nav>
-        <a class="navlink" href="/Teacher/List">Back to Teachers</a>
-        <a class="dellink" href="/Teacher/DeleteConfirm/@Model.teacher.id">Delete</a>
+    <nav id="menu">
+        <ul >
+            <li>
+                <a href="/Teacher/List">Back to Teachers</a>
+            </li>
+            <li>
+                <a href="/Teacher/DeleteConfirm/@Model.teacher.id">Delete</a>
+            </li>
+            <li>
+                <a href="/Teacher/Update/@Model.teacher.id">Update teacher</a>
+            </li>
+        </ul>
+        
+        
+        
     </nav>
     <h2>Teacher information</h2>
     <p>Name: @Model.teacher.fname @Model.teacher.lname</p>

@@ -7,8 +7,7 @@
         }
     });
 }
-
-window.onload = function () {
+function searchTeacher() {
     formHandle = document.forms.searchForm;
     var hiredateCheckBox = formHandle.hiredateCheckBox;
     var nameCheckBox = formHandle.nameCheckBox;
@@ -22,7 +21,8 @@ window.onload = function () {
     hiredateGroup.style.display = "none";
     salaryGroup.style.display = "none";
 
-    addEvent(nameCheckBox,nameGroup);
-    addEvent(hiredateCheckBox,hiredateGroup);
-    addEvent(salaryCheckBox,salaryGroup);
+    addEvent(nameCheckBox, nameGroup);
+    addEvent(hiredateCheckBox, hiredateGroup);
+    addEvent(salaryCheckBox, salaryGroup);
+
 }
